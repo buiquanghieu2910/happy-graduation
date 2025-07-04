@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chúc Mừng Lễ Tốt Nghiệp</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin: 0.5em 0 0.2em;
+            opacity: 0;
+            animation: fadeIn 3s ease-in-out forwards;
+        }
+
+        p {
+            font-size: 1.5em;
+            opacity: 0;
+            animation: fadeIn 3s ease-in-out forwards;
+            animation-delay: 2s;
+            margin-bottom: 1em;
+        }
+
+        .image-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            opacity: 0;
+            animation: fadeIn 3s ease-in-out forwards;
+            animation-delay: 3.5s;
+        }
+
+        .image-row img {
+            width: 40vw;
+            max-width: 400px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .image-row img:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        @media (max-width: 768px) {
+            .image-row img {
+                width: 80vw;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="fireworks"></canvas>
+
+    <h1>🎓 Chúc Mừng Lễ Tốt Nghiệp! 🎉</h1>
+    <p>Chúc 2 em thành công trên chặng đường mới!</p>
+
+    <div class="image-row">
+        <img src="/images/thao_tran.jpg" alt="Ảnh 1">
+        <img src="/images/all.jpg" alt="Ảnh 2">
+        <img src="/images/thao_vuong.jpg" alt="Ảnh 3">
+    </div>
+
+    <script>
+        const canvas = document.getElementById("fireworks");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        function Firework(x, y) {
+            this.x = x;
+            this.y = y;
+            this.particles = [];
+
+            for (let i = 0; i < 100; i++) {
+                this.particles.push({
+                    x: this.x,
+                    y: this.y,
+                    angle: Math.random() * 2 * Math.PI,
+                    speed: Math.random() * 4 + 1,
+                    radius: 2,
+                    alpha: 1
+                });
+            }
+
+            this.update = function () {
+                this.particles.forEach(p => {
+                    p.x += Math.cos(p.angle) * p.speed;
+                    p.y += Math.sin(p.angle) * p.speed;
+                    p.alpha -= 0.01;
+                });
+            };
+
+            this.draw = function () {
+                this.particles.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, ${Math.floor(Math.random() * 255)}, 0, ${p.alpha})`;
+                    ctx.fill();
+                });
+            };
+        }
+
+        let fireworks = [];
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (Math.random() < 0.05) {
+                fireworks.push(new Firework(
+                    Math.random() * canvas.width,
+                    Math.random() * canvas.height / 2
+                ));
+            }
+
+            fireworks.forEach((f, i) => {
+                f.update();
+                f.draw();
+                if (f.particles.every(p => p.alpha <= 0)) {
+                    fireworks.splice(i, 1);
+                }
+            });
+        }
+
+        animate();
+    </script>
+</body>
+
+</html>
